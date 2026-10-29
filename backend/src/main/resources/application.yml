@@ -1,0 +1,41 @@
+server:
+  port: ${BACKEND_PORT:8080}
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: traceback-backend
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/traceback}
+      auto-index-creation: true
+  servlet:
+    multipart:
+      max-file-size: ${MAX_UPLOAD_SIZE_MB:5}MB
+      max-request-size: ${MAX_UPLOAD_SIZE_MB:5}MB
+
+traceback:
+  jwt:
+    secret: ${JWT_SECRET:TraceBackSecretKeyForJwtAuthenticationMustBeAtLeast256BitsLongForHS256Security}
+    expiration-ms: ${JWT_ACCESS_TOKEN_EXPIRATION:86400000}
+  cors:
+    allowed-origins: ${FRONTEND_ORIGIN:http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173}
+  seed:
+    enabled: ${SEED_DATA_ENABLED:true}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method

@@ -1,0 +1,40 @@
+# Secrets & Local Environment
+.env
+.env.local
+.env.*.local
+
+# Dependency directories
+node_modules/
+backend/target/
+frontend/dist/
+
+# Java & Maven
+*.class
+*.jar
+*.war
+*.ear
+.mvn/
+mvnw
+mvnw.cmd
+
+# Logs & Storage
+*.log
+logs/
+uploads/
+.system_generated/
+
+# IDE & Editor files
+.idea/
+*.iml
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS Artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test artifacts
+coverage/
+.vitest/

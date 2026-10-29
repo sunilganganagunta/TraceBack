@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: traceback-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: traceback
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - traceback-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: traceback-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/traceback
+      BACKEND_PORT: 8080
+      JWT_SECRET: ${JWT_SECRET:-TraceBackSecretKeyForJwtAuthenticationMustBeAtLeast256BitsLongForHS256Security}
+      JWT_ACCESS_TOKEN_EXPIRATION: ${JWT_ACCESS_TOKEN_EXPIRATION:-86400000}
+      FRONTEND_ORIGIN: "http://localhost:5173,http://localhost:3000,http://localhost:80"
+      SEED_DATA_ENABLED: "true"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - traceback-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: traceback-frontend
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - traceback-network
+
+volumes:
+  mongo_data:
+    driver: local
+
+networks:
+  traceback-network:
+    driver: bridge
